@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+applicatiom-local.yml
+log4j2-spring-local.xml
