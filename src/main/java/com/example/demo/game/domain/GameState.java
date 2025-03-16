@@ -1,10 +1,7 @@
 package com.example.demo.game.domain;
 
 public class GameState {
-    /*
-    package com.game.yutnori.model;
 
-public class GameState {
     private Player currentTurn;
     private final Player player1;
     private final Player player2;
@@ -22,7 +19,4 @@ public class GameState {
     public void switchTurn() {
         currentTurn = (currentTurn == player1) ? player2 : player1;
     }
-}
-
-     */
 }

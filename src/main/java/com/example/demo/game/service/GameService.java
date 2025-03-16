@@ -1,25 +1,25 @@
 package com.example.demo.game.service;
 
+import com.example.demo.game.domain.GameState;
+import com.example.demo.game.domain.Player;
+import com.example.demo.game.domain.YutResult;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 @Service
-public class GameService {
-
-    /*
-    package com.game.yutnori.service;
-
-import com.game.yutnori.model.GameState;
-import com.game.yutnori.model.Player;
-import com.game.yutnori.model.YutResult;
-
-import java.util.*;
-
+@RequiredArgsConstructor
 public class GameService {
     private final Random random = new Random();
     private GameState gameState;
 
     public void startGame(Map<String, Player> players) {
         List<Player> playerList = new ArrayList<>(players.values());
+
         gameState = new GameState(playerList.get(0), playerList.get(1));
     }
 
@@ -31,10 +31,6 @@ public class GameService {
         YutResult result = YutResult.throwYut();
         gameState.switchTurn();
         return result.name();
+
     }
-}
-
-     */
-
-
 }

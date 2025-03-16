@@ -1,6 +1,8 @@
 package com.example.demo.websocket;
 
+import com.example.demo.game.controller.GameController;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -10,19 +12,9 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
-    private final WebSocketHandler webSocketHandler;
 
-    @Override
+
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/ws").setAllowedOrigins("*");
+        registry.addHandler(new GameController(), "/game").setAllowedOrigins("*");
     }
-
-
-    /*
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new GameController (), "/game").setAllowedOrigins("*");
-    }
-
-     */
-
 }
