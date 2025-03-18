@@ -1,8 +1,7 @@
-package com.example.demo.websocket;
+package com.example.demo.config.websocket;
 
 import com.example.demo.game.controller.GameController;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;

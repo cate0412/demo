@@ -25,7 +25,7 @@ public class GameUserInterceptor implements HandlerInterceptor {
             //
             //User = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         return true;

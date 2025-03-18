@@ -1,4 +1,4 @@
-package com.example.demo.websocket.handler;
+package com.example.demo.config.websocket.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 @Configuration
+@RequiredArgsConstructor
 public class StompPreHandler implements ChannelInterceptor {
     @Value("${api-key.name}")
     private String apiKeyName;
@@ -26,7 +26,7 @@ public class StompPreHandler implements ChannelInterceptor {
 
     /**
      * 메시지가 채널로 전송되기 전에 실행
-     *
+     *[TODO] jwt 토큰을 이용한 인증처리추가 필요
      * @param message 메시지 객체
      * @param channel 메시지 채널
      * @return 수정된 메시지 객체
@@ -50,3 +50,4 @@ public class StompPreHandler implements ChannelInterceptor {
         return message;
     }
 }
+

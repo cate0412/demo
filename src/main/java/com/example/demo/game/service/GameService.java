@@ -14,7 +14,6 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class GameService {
-    private final Random random = new Random();
     private GameState gameState;
 
     public void startGame(Map<String, Player> players) {

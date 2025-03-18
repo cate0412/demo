@@ -1,4 +1,4 @@
-package com.example.demo.websocket.handler;
+package com.example.demo.config.websocket.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
