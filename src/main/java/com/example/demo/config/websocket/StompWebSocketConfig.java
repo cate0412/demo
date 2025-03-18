@@ -21,7 +21,7 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/sub");
-        registry.setApplicationDestinationPrefixes("/pub");
+        registry.setApplicationDestinationPrefixes("/game");
 
         // 구독(sub) : 접두사로 시작하는 메시지를 브로커가 처리하도록 설정합니다. 클라이언트는 이 접두사로 시작하는 주제를 구독하여 메시지를 받을 수 있습니다.
         // 예를 들어, 소켓 통신에서 사용자가 특정 메시지를 받기위해 "/sub"이라는 prefix 기반 메시지 수신을 위해 Subscribe합니다.
@@ -37,10 +37,10 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/yutnori") //주소 - ws://localhost:9090/yutnori
+        registry.addEndpoint("/yutnori") //주소 - game://localhost:9090/yutnori
                 .setAllowedOrigins("*")
-                .setAllowedOriginPatterns("http://localhost:9090")
-                .withSockJS();
+                .setAllowedOriginPatterns("http://localhost:9090");
+                //.withSockJS();
 
         registry.setErrorHandler(stompErrorHandler);
     }
