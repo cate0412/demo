@@ -35,6 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
-
+.env
+docker-compose.yml
+Dockerfile
+application-docker.yml
 application-local.yml
 log4j2-spring-local.xml
