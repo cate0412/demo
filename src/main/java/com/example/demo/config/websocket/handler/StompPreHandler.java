@@ -2,27 +2,20 @@ package com.example.demo.config.websocket.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class StompPreHandler implements ChannelInterceptor {
-    @Value("${api-key.name}")
-    private String apiKeyName;
+    //@Value("${api-key.name}")
+    //private String apiKeyName;
 
-    @Value("${api-key.value}")
-    private String apiKeyValue;
+    //@Value("${api-key.value}")
+    //private String apiKeyValue;
 
     /**
      * 메시지가 채널로 전송되기 전에 실행
@@ -34,6 +27,7 @@ public class StompPreHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
+        /*
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         // 메시지의 구독 명령이 CONNECT인 경우에만 실행
@@ -46,7 +40,7 @@ public class StompPreHandler implements ChannelInterceptor {
                 throw new MessageDeliveryException("UNAUTHORIZED");
             }
         }
-
+         */
         return message;
     }
 }
