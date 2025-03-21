@@ -23,7 +23,7 @@ public class GameUserInterceptor implements HandlerInterceptor {
             //게임유저 id를 활용해 유저정보를 가져옴
             //GameUser gameUser = gameUserService.findById(gameUserId);
             //
-            //User = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
