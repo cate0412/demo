@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STOMP 채팅방</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h2>STOMP 채팅방</h2>
+
+<div>
+    <input type="text" id="username" placeholder="사용자 이름 입력">
+    <button onclick="addUser()">사용자 등록</button>
+</div>
+
+<h3>사용자 목록</h3>
+<ul id="userList"></ul>
+
+<div>
+    <input type="text" id="roomName" placeholder="채팅방 이름 입력">
+    <button onclick="createRoom()">방 만들기</button>
+</div>
+
+<h3>채팅방 목록</h3>
+<ul id="roomList"></ul>
+
+<div>
+    <button onclick="loadRooms()">채팅방 목록 새로고침</button>
+</div>
+
+<div id="chatBox" style="display:none;">
+    <h3 id="currentRoom"></h3>
+    <h3>채팅방 유저 목록</h3>
+    <ul id="roomUserList"></ul>
+    <input type="text" id="message" placeholder="메시지 입력">
+    <button onclick="sendMessage()">전송</button>
+    <button onclick="leaveRoom()">방 나가기</button>
+    <ul id="messages"></ul>
+</div>
+
+<script>
+    let stompClient = null;
+    let username = "";
+    let currentRoom = "";
+
+    function addUser() {
+        username = document.getElementById("username").value;
+        if (!username) {
+            alert("사용자 이름을 입력하세요!");
+            return;
+        }
+
+        fetch(`/addUser?username=${username}`)
+            .then(response => response.json())
+            .then(users => {
+                console.log("현재 사용자 목록:", users);
+                loadUsers();
+                connectWebSocket(); // WebSocket 연결
+            });
+    }
+
+    function createRoom() {
+        const roomName = document.getElementById("roomName").value;
+        if (!roomName) {
+            alert("방 이름을 입력하세요!");
+            return;
+        }
+
+        fetch(`/createRoom?roomName=${roomName}`)
+            .then(response => response.json())
+            .then(() => loadRooms());
+    }
+
+    function joinRoom(roomName) {
+        if (!username || !roomName) {
+            alert("사용자 이름과 방 이름을 입력하세요!");
+            return;
+        }
+
+        currentRoom = roomName;
+
+        fetch(`/joinRoom?roomName=${roomName}&username=${username}`)
+            .then(response => response.json())
+            .then(users => console.log("방 참가자:", users));
+
+        //방 참가자 목록을 업데이트
+        loadRoomUsers();
+
+        // 사용자가 채팅방에 입장했음을 서버에 알림
+        const enterMessage = {sender: username, room: currentRoom};
+        stompClient.send("/app/enterRoom", {}, JSON.stringify(enterMessage));
+    }
+
+    function leaveRoom() {
+        if (!currentRoom) {
+            alert("현재 입장한 방이 없습니다!");
+            return;
+        }
+
+        fetch(`/leaveRoom?roomName=${currentRoom}&username=${username}`)
+            .then(response => response.json())
+            .then(() => {
+                // 사용자가 채팅방에서 나갔음을 서버에 알림
+                const leaveMessage = { sender: username, room: currentRoom };
+                stompClient.send("/app/leaveRoom", {}, JSON.stringify(leaveMessage));
+            });
+    }
+
+    function connectWebSocket() {
+        const socket = new SockJS('/chat');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function () {
+            document.getElementById("chatBox").style.display = "block";
+            document.getElementById("currentRoom").innerText = `채팅방: ${currentRoom}`;
+
+            stompClient.subscribe(`/topic/${currentRoom}`, function (message) {
+                const msg = JSON.parse(message.body);
+                const messages = document.getElementById("messages");
+                const li = document.createElement("li");
+                li.textContent = `${msg.sender}: ${msg.content}`;
+                messages.appendChild(li);
+            });
+        });
+    }
+
+    function sendMessage() {
+        const messageContent = document.getElementById("message").value;
+        if (messageContent && stompClient) {
+            const chatMessage = {sender: username, content: messageContent, room: currentRoom};
+            stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
+            document.getElementById("message").value = "";
+        }
+    }
+
+    function gameOver() {
+        fetch(`/gameOver?roomName=${currentRoom}&username=${username}`)
+            .then(response => response.json())
+            .then(() => {
+                // WebSocket 연결 해제
+                if (stompClient) {
+                    stompClient.disconnect();
+                }
+                // UI 업데이트
+                document.getElementById("chatBox").style.display = "none";
+                document.getElementById("messages").innerHTML = "";
+                currentRoom = "";
+                alert("게임을 종료합니다.");
+            });
+    }
+
+    function loadRooms() {
+        fetch("/rooms")
+            .then(response => response.json())
+            .then(rooms => {
+                const roomList = document.getElementById("roomList");
+                roomList.innerHTML = "";
+                Object.keys(rooms).forEach(room => {
+                    const li = document.createElement("li");
+                    li.textContent = room + " ";
+
+                    const joinButton = document.createElement("button");
+                    joinButton.textContent = "입장";
+                    joinButton.onclick = () => joinRoom(room);
+
+                    li.appendChild(joinButton);
+                    roomList.appendChild(li);
+                });
+            });
+    }
+
+    function loadUsers() {
+        fetch("/users")
+            .then(response => response.json())
+            .then(users => {
+                const userList = document.getElementById("userList");
+                userList.innerHTML = "";
+                users.forEach(user => {
+                    const li = document.createElement("li");
+                    li.textContent = user;
+                    userList.appendChild(li);
+                });
+            });
+    }
+
+    function loadRoomUsers() {
+        fetch(`/roomUsers?roomName=${currentRoom}`)
+            .then(response => response.json())
+            .then(roomUsers => {
+                const roomUserList = document.getElementById("roomUserList");
+                roomUserList.innerHTML = "";
+                roomUsers.forEach(roomUser => {
+                    const li = document.createElement("li");
+                    li.textContent = roomUser;
+                    roomUserList.appendChild(li);
+                });
+            });
+    }
+
+    loadRooms();
+    loadUsers();
+    loadRoomUsers();
+</script>
+</body>
+</html>
